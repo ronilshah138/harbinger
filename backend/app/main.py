@@ -1,9 +1,12 @@
 import logging
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import vessels, prices, predictions
+from app.services.price_ingestor import run_scheduler
+from app.services.ais_ingestor import run_ais_stream
 
 # Set up logging
 logging.basicConfig(
@@ -18,9 +21,22 @@ async def lifespan(app: FastAPI):
     Lifespan context manager to handle startup and shutdown event logs.
     """
     logger.info("🚀 Starting Harbinger Commodity Shipping Intelligence Platform...")
-    # Custom startup operations can be added here (e.g., seeding DB, starting async polls)
+    
+    price_task = asyncio.create_task(run_scheduler())
+    logger.info("Started price ingestor")
+    
+    ais_task = asyncio.create_task(run_ais_stream())
+    logger.info("Started AIS stream")
+    
     yield
+    
     logger.info("🛑 Shutting down Harbinger Commodity Shipping Intelligence Platform...")
+    price_task.cancel()
+    ais_task.cancel()
+    try:
+        await asyncio.gather(price_task, ais_task, return_exceptions=True)
+    except Exception as e:
+        logger.error(f"Error during shutdown tasks: {e}")
 
 # Initialize FastAPI App
 app = FastAPI(
