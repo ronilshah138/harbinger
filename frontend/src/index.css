@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Leaflet Map Theme Adjustments */
+.leaflet-container {
+  background-color: #090d16 !important;
+}
+
+/* Custom styles for Leaflet popups */
+.custom-leaflet-popup .leaflet-popup-content-wrapper {
+  background: #111827 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #1f2937 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+}
+
+.custom-leaflet-popup .leaflet-popup-tip {
+  background: #111827 !important;
+}
+
+/* Map popup close button override */
+.custom-leaflet-popup .leaflet-popup-close-button {
+  color: #9ca3af !important;
+  padding: 6px !important;
+}
+
+.custom-leaflet-popup .leaflet-popup-close-button:hover {
+  color: #f3f4f6 !important;
+}
+
+/* Scrollbar styling for telemetry log console */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
