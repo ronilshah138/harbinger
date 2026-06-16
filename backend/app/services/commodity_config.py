@@ -1,0 +1,18 @@
+COMMODITY_TICKERS = {
+    "gold": "GC=F",
+    "silver": "SI=F",
+    "oil": "CL=F",
+    "copper": "HG=F",
+    "natural_gas": "NG=F",
+    "platinum": "PL=F",
+    "palladium": "PA=F",
+    "aluminum": "ALI=F",
+    "nickel": "NI=F",
+    "zinc": "ZNC=F",
+    "iron_ore": "TIO=F",
+    "coal": "MTF=F",
+    "uranium": "UX=F",
+    "wheat": "ZW=F",
+    "corn": "ZC=F",
+    "soybeans": "ZS=F",
+}

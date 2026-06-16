@@ -4,11 +4,10 @@ from datetime import datetime
 
 from app.database import get_db
 from app.services.ml_engine import CommodityModel, train_and_predict_commodity_task
+from app.services.commodity_config import COMMODITY_TICKERS
 
 router = APIRouter()
 model_engine = CommodityModel()
-
-VALID_COMMODITIES = {"gold", "silver", "oil", "copper"}
 
 @router.get("/{commodity}")
 def get_prediction(commodity: str, db=Depends(get_db)) -> Dict[str, Any]:
@@ -16,10 +15,10 @@ def get_prediction(commodity: str, db=Depends(get_db)) -> Dict[str, Any]:
     Returns latest predictions and market impact scores.
     """
     comm_lower = commodity.lower()
-    if comm_lower not in VALID_COMMODITIES:
+    if comm_lower not in COMMODITY_TICKERS:
         raise HTTPException(
             status_code=400,
-            detail=f"Unsupported commodity '{commodity}'. Options: gold, silver, oil, copper."
+            detail=f"Unsupported commodity '{commodity}'."
         )
 
     prediction_data = None
@@ -79,10 +78,10 @@ def trigger_prediction(commodity: str, background_tasks: BackgroundTasks, db=Dep
     Triggers ML model training and updating.
     """
     comm_lower = commodity.lower()
-    if comm_lower not in VALID_COMMODITIES:
+    if comm_lower not in COMMODITY_TICKERS:
         raise HTTPException(
             status_code=400,
-            detail=f"Unsupported commodity '{commodity}'. Options: gold, silver, oil, copper."
+            detail=f"Unsupported commodity '{commodity}'."
         )
 
     task_id = None
