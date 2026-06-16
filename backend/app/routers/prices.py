@@ -1,64 +1,34 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import Dict, Any
-from datetime import datetime, timedelta
+from typing import Dict, Any, List
 
 from app.database import get_db
-from app.services.price_ingestor import fetch_prices_for_commodity
 from app.services.commodity_config import COMMODITY_TICKERS
 
 router = APIRouter()
 
 @router.get("/commodities")
-async def get_commodities() -> Dict[str, Any]:
+def get_commodities() -> Dict[str, Any]:
     """
-    Returns the full list of supported commodities with their tickers.
+    Returns the full list of supported commodities.
     """
     return {
-        "commodities": [
-            {"name": k, "ticker": v} for k, v in COMMODITY_TICKERS.items()
-        ]
+        "commodities": list(COMMODITY_TICKERS.keys())
     }
 
 @router.get("/{commodity}")
-async def get_price_history(commodity: str, db=Depends(get_db)) -> Dict[str, Any]:
+def get_price_history(commodity: str, db=Depends(get_db)) -> List[Dict[str, Any]]:
     """
-    Returns latest price and 7-day history for the commodity.
+    Returns up to 200 rows (7 days of hourly data) for the commodity.
     """
     comm_lower = commodity.lower()
     if comm_lower not in COMMODITY_TICKERS:
         raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported commodity '{commodity}'."
+            status_code=404,
+            detail="Commodity not supported"
         )
 
-    history = []
-    
-    # Try database
     try:
-        if "placeholder" not in db.supabase_url.lower():
-            seven_days_ago = (datetime.utcnow() - timedelta(days=7)).isoformat()
-            response = db.table("prices") \
-                         .select("*") \
-                         .eq("commodity", comm_lower) \
-                         .gte("timestamp", seven_days_ago) \
-                         .order("timestamp", desc=False) \
-                         .execute()
-            if response.data:
-                history = response.data
-    except Exception:
-        pass
-
-    # Fallback to direct yfinance ingestor fetch
-    if not history:
-        history = fetch_prices_for_commodity(comm_lower)
-
-    if not history:
-        raise HTTPException(status_code=404, detail=f"No price records found for {commodity}.")
-
-    latest = history[-1]
-
-    return {
-        "commodity": comm_lower,
-        "latest": latest,
-        "history": history
-    }
+        response = db.table("prices").select("*").eq("commodity", comm_lower).order("timestamp", desc=True).limit(200).execute()
+        return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
