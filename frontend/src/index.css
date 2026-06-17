@@ -2,48 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Leaflet Map Theme Adjustments */
-.leaflet-container {
-  background-color: #090d16 !important;
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
 }
 
-/* Custom styles for Leaflet popups */
-.custom-leaflet-popup .leaflet-popup-content-wrapper {
-  background: #111827 !important;
-  color: #f1f5f9 !important;
-  border: 1px solid #1f2937 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+body { 
+  background: #0A0A0F; 
+  color: #F0F4FF; 
+  font-family: 'Inter', sans-serif; 
 }
 
-.custom-leaflet-popup .leaflet-popup-tip {
-  background: #111827 !important;
+h1, h2, h3, h4, h5, h6 { 
+  font-family: 'Space Grotesk', sans-serif; 
 }
 
-/* Map popup close button override */
-.custom-leaflet-popup .leaflet-popup-close-button {
-  color: #9ca3af !important;
-  padding: 6px !important;
+.glass {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
 }
 
-.custom-leaflet-popup .leaflet-popup-close-button:hover {
-  color: #f3f4f6 !important;
+.glass:hover {
+  border-color: rgba(99,179,237,0.3);
+  box-shadow: 0 0 30px rgba(99,179,237,0.08);
 }
 
-/* Scrollbar styling for telemetry log console */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
+.btn-primary {
+  background: #63B3ED;
+  color: #0A0A0F;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: #090d16;
+.btn-primary:hover { 
+  box-shadow: 0 0 20px rgba(99,179,237,0.4); 
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #1f2937;
-  border-radius: 3px;
+.btn-glass {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(99,179,237,0.3);
+  color: #63B3ED;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+.btn-glass:hover {
+  background: rgba(99,179,237,0.1);
+  box-shadow: 0 0 20px rgba(99,179,237,0.2);
+}
+
+.glow-blue {
+  box-shadow: 0 0 30px rgba(99,179,237,0.12);
+}
+
+.glow-blue-strong {
+  box-shadow: 0 0 60px rgba(99,179,237,0.2);
+}
+
+/* Hide scrollbar for ticker */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Page transition base styles */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
 }
