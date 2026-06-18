@@ -6,6 +6,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import yfinance as yf
+import time
 
 from app.database import get_db
 from app.services.ml_engine import predict, get_model_path
@@ -13,6 +14,10 @@ from app.services.commodity_config import COMMODITY_TICKERS
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+_price_cache = {}
+_cache_timestamp = {}
+CACHE_TTL = 3600
 
 CROSS_ASSET_MAP = {
   "gold": [
@@ -64,10 +69,16 @@ CROSS_ASSET_MAP = {
 }
 
 def fetch_asset_current_price(ticker: str) -> Optional[float]:
+    if ticker in _price_cache and time.time() - _cache_timestamp.get(ticker, 0) < CACHE_TTL:
+        return _price_cache[ticker]
+
     try:
-        data = yf.Ticker(ticker).history(period="1d", interval="1h")
+        data = yf.Ticker(ticker).history(period="5d", interval="1d")
         if not data.empty:
-            return float(data['Close'].iloc[-1])
+            price = float(data['Close'].iloc[-1])
+            _price_cache[ticker] = price
+            _cache_timestamp[ticker] = time.time()
+            return price
         return None
     except Exception as e:
         logger.error(f"Error fetching price for {ticker}: {e}")

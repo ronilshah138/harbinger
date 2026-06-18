@@ -64,6 +64,7 @@ async def run_once() -> int:
         if records:
             store_to_supabase(records)
             total_stored += len(records)
+        await asyncio.sleep(2)
             
     logger.info(f"Total records stored across all commodities: {total_stored}")
     return total_stored

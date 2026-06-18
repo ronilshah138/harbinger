@@ -10,6 +10,33 @@ from app.services.market_impact import analyze_market_impact, analyze_all_commod
 
 router = APIRouter()
 
+@router.get("/market-impact")
+def get_all_market_impact() -> List[Dict[str, Any]]:
+    """
+    Returns market impact analysis for all commodities with trained models.
+    """
+    try:
+        return analyze_all_commodities()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/market-impact/{commodity}")
+def get_market_impact(commodity: str) -> Dict[str, Any]:
+    """
+    Returns market impact analysis for a commodity.
+    """
+    comm_lower = commodity.lower()
+    if comm_lower not in COMMODITY_TICKERS:
+        raise HTTPException(
+            status_code=404,
+            detail="Commodity not supported"
+        )
+    
+    try:
+        return analyze_market_impact(comm_lower)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/{commodity}")
 def get_prediction(commodity: str, db=Depends(get_db)) -> Dict[str, Any]:
     """
@@ -57,32 +84,5 @@ def trigger_prediction(commodity: str, db=Depends(get_db)) -> Dict[str, Any]:
             "message": f"Training started for {comm_lower}",
             "status": "training"
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/market-impact/{commodity}")
-def get_market_impact(commodity: str) -> Dict[str, Any]:
-    """
-    Returns market impact analysis for a commodity.
-    """
-    comm_lower = commodity.lower()
-    if comm_lower not in COMMODITY_TICKERS:
-        raise HTTPException(
-            status_code=404,
-            detail="Commodity not supported"
-        )
-    
-    try:
-        return analyze_market_impact(comm_lower)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/market-impact")
-def get_all_market_impact() -> List[Dict[str, Any]]:
-    """
-    Returns market impact analysis for all commodities with trained models.
-    """
-    try:
-        return analyze_all_commodities()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
